@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { authRequired } from '../middleware/auth.js';
-import { coaches } from '../../client/src/data/constants.js';
+import { fallbackCoaches } from '../data/coaches.js';
 
 const router = Router();
 const OVERPASS_URL = 'https://overpass-api.de/api/interpreter';
@@ -72,7 +72,7 @@ router.get('/nearby', authRequired, async (req, res) => {
     res.json({ centers, source: 'OpenStreetMap' });
   } catch (error) {
     console.error('Nearby centers lookup failed:', error.message);
-    res.json({ centers: coaches.slice(0, 4).map((center) => ({ ...center, live: false })), source: 'PathMind directory', fallback: true });
+    res.json({ centers: fallbackCoaches.slice(0, 4).map((center) => ({ ...center, live: false })), source: 'PathMind directory', fallback: true });
   }
 });
 
