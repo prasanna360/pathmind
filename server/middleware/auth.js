@@ -15,6 +15,7 @@ export function authRequired(req, res, next) {
 
   try {
     const { email } = jwt.verify(header.slice(7), JWT_SECRET);
+    if (typeof email !== 'string' || !email) return res.status(401).json({ error: 'Invalid or expired token' });
     const user = getUsers()[email];
     if (!user) return res.status(401).json({ error: 'User not found' });
     req.user = sanitizeUser(user);

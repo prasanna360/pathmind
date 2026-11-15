@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext.jsx';
-import { CODING_TRACKS, INTERESTS, INSTRUMENTS, normalizeInterest } from '../data/constants.js';
+import { CODING_TRACKS, getInterestLabel, INTERESTS, INSTRUMENTS, normalizeInterest } from '../data/constants.js';
 
 export default function EditInterests({ onClose }) {
   const { user, updateInterests, showToast } = useAuth();
@@ -14,7 +14,7 @@ export default function EditInterests({ onClose }) {
     setSelected((prev) => {
       if (prev.includes(val)) return prev.filter((x) => x !== val);
       if (prev.length >= 3) {
-        showToast('⚠️ You can select up to 3 interests only.');
+        showToast('You can select up to 3 interests only.');
         return prev;
       }
       return [...prev, val];
@@ -22,15 +22,15 @@ export default function EditInterests({ onClose }) {
   };
 
   const save = async () => {
-    if (selected.length === 0) return showToast('⚠️ Please select at least one interest.');
-    if (selected.includes('💻 Coding') && codingTracks.length === 0) return showToast('⚠️ Select at least one coding language.');
+    if (selected.length === 0) return showToast('Please select at least one interest.');
+    if (selected.includes('💻 Coding') && codingTracks.length === 0) return showToast('Select at least one coding language.');
     setSaving(true);
     try {
       await updateInterests(selected, selected.includes('🎸 Music') ? instrument : null, selected.includes('💻 Coding') ? codingTracks[0] : null, selected.includes('💻 Coding') ? codingTracks : []);
       onClose();
-      showToast('✅ Interests updated!');
+      showToast('Interests updated.');
     } catch (error) {
-      showToast(`⚠️ ${error.message}`);
+      showToast(error.message);
     } finally {
       setSaving(false);
     }
@@ -47,7 +47,7 @@ export default function EditInterests({ onClose }) {
         <p style={{ color: 'var(--muted)', fontSize: '.85rem', marginBottom: '1.5rem' }}>Pick 1–3 things you want to learn. Your dashboard and exams will update.</p>
         <div className="interest-grid">
           {INTERESTS.map((item) => (
-            <button type="button" key={item} className={`interest-chip${selected.includes(item) ? ' selected' : ''}`} onClick={() => toggle(item)}>{selected.includes(item) ? '✓ ' : ''}{item}</button>
+            <button type="button" key={item} className={`interest-chip${selected.includes(item) ? ' selected' : ''}`} onClick={() => toggle(item)}>{getInterestLabel(item)}</button>
           ))}
         </div>
         {selected.includes('🎸 Music') && (

@@ -4,19 +4,22 @@ import { getUsers, saveUsers, sanitizeUser } from '../db.js';
 import { signToken, authRequired } from '../middleware/auth.js';
 
 const router = Router();
+const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 router.post('/signup', async (req, res) => {
   try {
     const { name, email, age, password, interests, freeTime, goal, skillLevel, instrument, codingTrack, codingTracks } = req.body;
 
     if (!name?.trim()) return res.status(400).json({ error: 'Please enter your name.' });
-    if (!email?.includes('@')) return res.status(400).json({ error: 'Please enter a valid email address.' });
+    if (typeof email !== 'string' || !EMAIL_PATTERN.test(email.trim())) {
+      return res.status(400).json({ error: 'Please enter a valid email address.' });
+    }
     if (!age || age < 18 || age > 35) return res.status(400).json({ error: 'Age must be between 18 and 35.' });
     if (!password || password.length < 6) return res.status(400).json({ error: 'Password must be at least 6 characters.' });
     if (!interests?.length) return res.status(400).json({ error: 'Please select at least one interest.' });
 
-    const users = getUsers();
     const key = email.trim().toLowerCase();
+    const users = getUsers();
     if (users[key]) return res.status(409).json({ error: 'already_registered' });
 
     const user = {
@@ -53,10 +56,12 @@ router.post('/signup', async (req, res) => {
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
-    if (!email || !password) return res.status(400).json({ error: 'Email and password required.' });
+    if (typeof email !== 'string' || !EMAIL_PATTERN.test(email.trim()) || !password) {
+      return res.status(400).json({ error: 'Please enter a valid email address and password.' });
+    }
 
-    const users = getUsers();
     const key = email.trim().toLowerCase();
+    const users = getUsers();
     const user = users[key];
     if (!user) return res.status(401).json({ error: 'No account found with this email.' });
 

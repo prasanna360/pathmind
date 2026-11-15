@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { api } from '../api/client.js';
 import { useAuth } from '../context/AuthContext.jsx';
+import { getInterestLabel } from '../data/constants.js';
 
 export default function Exam() {
   const { user, submitExamResult } = useAuth();
@@ -87,8 +88,8 @@ export default function Exam() {
     <div className="page active">
       <div className="exam-container">
         <div className="exam-top">
-          <h2>Week {week} Skill Assessment – {topic}</h2>
-          <div className="timer-badge">⏱ <span>{mins}:{secs}</span></div>
+          <h2>Week {week} Skill Assessment – {getInterestLabel(topic)}</h2>
+          <div className="timer-badge"><span>{mins}:{secs}</span></div>
         </div>
         <div className="exam-progress-wrap">
           <div className="exam-progress-bar" style={{ width: `${pct}%` }} />
@@ -115,7 +116,7 @@ export default function Exam() {
           )}
           {answered && q.type !== 'written' && (
             <div className={`feedback-box ${answers[currentQ] === q.a ? 'correct-fb' : 'wrong-fb'} show`}>
-              {answers[currentQ] === q.a ? '✅ Correct! Well done.' : `❌ Incorrect. The right answer is: ${q.o[q.a]}`}
+              {answers[currentQ] === q.a ? 'Correct. Well done.' : `Incorrect. The right answer is: ${q.o[q.a]}`}
             </div>
           )}
         </div>
@@ -128,7 +129,7 @@ export default function Exam() {
               <button type="button" className="btn btn-outline" onClick={() => setCurrentQ((c) => c + 1)}>Next →</button>
             )}
             {answered && currentQ === questions.length - 1 && (
-              <button type="button" className="btn btn-success" onClick={finish}>Submit Exam ✓</button>
+              <button type="button" className="btn btn-success" onClick={finish}>Submit Exam</button>
             )}
           </div>
         </div>

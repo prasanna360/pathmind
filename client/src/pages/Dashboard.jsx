@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext.jsx';
 import { api } from '../api/client.js';
 import {
   coaches,
+  getInterestLabel,
   INTERESTS,
   examTopicLabels,
   getPathDisplay,
@@ -60,9 +61,9 @@ export default function Dashboard() {
       await completeProject(activeProject.pathKey, activeProject.week, { ...projectForm, codingTrack: activeProject.codingTrack });
       setProjectForm({ title: '', description: '', url: '' });
       setShowProjectForm(false);
-      showToast('✅ Project added to your portfolio!');
+      showToast('Project added to your portfolio.');
     } catch (error) {
-      showToast(`⚠️ ${error.message}`);
+      showToast(error.message);
     } finally {
       setProjectSaving(false);
     }
@@ -117,13 +118,13 @@ export default function Dashboard() {
       <div className="dash-inner">
         <div className="dash-welcome">
           <div>
-            <div className="dash-greeting">Welcome back, <span>{fn}</span> 👋</div>
+            <div className="dash-greeting">Welcome back, <span>{fn}</span></div>
             <div className="dash-meta">
-              {interests.join(' · ')} · {user.freeTime || 60} min/day · {user.skillLevel || 'Beginner'}
+              {interests.map(getInterestLabel).join(' · ')} · {user.freeTime || 60} min/day · {user.skillLevel || 'Beginner'}
               {user.goal ? ` · Goal: ${user.goal}` : ''}
             </div>
           </div>
-          <button type="button" className="btn btn-outline" onClick={() => setShowEdit(true)}>⚙️ Edit Interests</button>
+          <button type="button" className="btn btn-outline" onClick={() => setShowEdit(true)}>Edit Interests</button>
         </div>
 
         {projectDone && typeof user.completedProjects[projectId] === 'object' && (
@@ -153,7 +154,7 @@ export default function Dashboard() {
           <div>
             <div className="today-kicker">TODAY&apos;S FOCUS</div>
             <h2>{todayTopic}</h2>
-            <p>{todayPath} · Week {todayProgress.weeks} · A focused session designed for your {user.freeTime || 60}-minute day.</p>
+            <p>{getInterestLabel(todayPath)} · Week {todayProgress.weeks} · A focused session designed for your {user.freeTime || 60}-minute day.</p>
           </div>
           <button type="button" className="btn btn-primary" onClick={() => setTodayLesson({ pathKey: todayPath, week: todayProgress.weeks, topic: todayTopic, codingTrack: todayCodingTrack })}>
             Start today&apos;s lesson →
@@ -162,7 +163,7 @@ export default function Dashboard() {
 
         <div className="exam-card">
           <div className="exam-info">
-            <h3>📝 Weekly Skill Assessment</h3>
+            <h3>Weekly Skill Assessment</h3>
             <p>10 knowledge checks + 2 written responses · Results saved instantly</p>
             <div className="exam-chips">
               {pathCards.map(({ key, codingTrack }) => (
@@ -176,14 +177,14 @@ export default function Dashboard() {
 
         {hist.length > 0 && (
           <div className="exam-history">
-            <div className="path-header"><h2>📊 Past Exam Results</h2></div>
+            <div className="path-header"><h2>Past Exam Results</h2></div>
             <div className="exam-hist-grid">
               {[...hist].reverse().slice(0, 6).map((h, i) => {
                 const pass = h.score >= 60;
-                const bar = pass ? 'linear-gradient(90deg,#1aff8c,#00c97a)' : 'linear-gradient(90deg,var(--accent2),#ff8c5c)';
+                const bar = pass ? 'linear-gradient(90deg,var(--success),var(--accent3))' : 'linear-gradient(90deg,var(--accent2),#ff8c5c)';
                 return (
                   <div key={`${h.date}-${i}`} className="exam-hist-card">
-                    <div className="eh-topic">{h.topic}</div>
+                    <div className="eh-topic">{getInterestLabel(h.topic)}</div>
                     <div className={`eh-score ${pass ? 'pass' : 'fail'}`}>{h.score}%</div>
                     <div style={{ fontSize: '.78rem', color: 'var(--muted)' }}>{h.correct} knowledge checks correct · {h.timeTaken}</div>
                     <div className="eh-date">{new Date(h.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</div>
@@ -199,7 +200,7 @@ export default function Dashboard() {
         <div className="path-grid">
           {pathCards.map(({ key, codingTrack }) => {
             const { prog, weeks } = getPathProgress(user.email, key, hist, user.completedLessons, user.completedProjects, codingTrack);
-            const { displayKey, desc, emoji } = getPathDisplay(key, user.instrument, codingTrack);
+            const { displayKey, desc } = getPathDisplay(key, user.instrument, codingTrack);
             return (
               <div
                 key={`${key}-${codingTrack || 'default'}`}
@@ -209,7 +210,6 @@ export default function Dashboard() {
                 role="button"
                 tabIndex={0}
               >
-                <div className="path-emoji">{emoji}</div>
                 <div className="path-title">{displayKey}</div>
                 <div className="path-desc">{desc}</div>
                 <div className="progress-bar"><div className="progress-fill" style={{ width: `${prog}%` }} /></div>
@@ -222,9 +222,9 @@ export default function Dashboard() {
 
         <div className="coaches-section">
           <div className="location-header">
-            <div className="path-header"><h2>Nearby Coach Centres 📍</h2><p className="location-note">{locationStatus === 'ready' ? 'Live centres near your current location' : locationStatus === 'fallback' ? 'Showing PathMind directory while live search is unavailable' : 'Use your location to find real centres nearby'}</p></div>
+            <div className="path-header"><h2>Nearby Coach Centres</h2><p className="location-note">{locationStatus === 'ready' ? 'Live centres near your current location' : locationStatus === 'fallback' ? 'Showing PathMind directory while live search is unavailable' : 'Use your location to find real centres nearby'}</p></div>
             <div className="location-actions">
-              {!userLocation && <select className="coach-filter" value={coachFilter} onChange={(event) => setCoachFilter(event.target.value)} aria-label="Filter coaches by interest"><option value="All">All skills</option>{interests.map((interest) => <option key={interest} value={interest.split(' ').slice(1).join(' ')}>{interest}</option>)}</select>}
+              {!userLocation && <select className="coach-filter" value={coachFilter} onChange={(event) => setCoachFilter(event.target.value)} aria-label="Filter coaches by interest"><option value="All">All skills</option>{interests.map((interest) => <option key={interest} value={getInterestLabel(interest)}>{getInterestLabel(interest)}</option>)}</select>}
               <button type="button" className="btn btn-outline location-button" onClick={detectLocation} disabled={locationStatus === 'loading'}>
                 {locationStatus === 'loading' ? 'Finding you...' : locationStatus === 'ready' ? '↻ Update location' : '⌖ Use my location'}
               </button>
@@ -236,8 +236,7 @@ export default function Dashboard() {
           {locationStatus === 'empty' && <p className="location-error location-success">No mapped coaching centres were found nearby.</p>}
           <div className="coach-grid">
             {nearbyCoaches.map((c) => (
-              <div key={c.id || c.n} className="coach-card" onClick={() => c.mapUrl ? window.open(c.mapUrl, '_blank', 'noopener,noreferrer') : showToast(`📍 Contacting ${c.n}…`)} role="button" tabIndex={0}>
-                <div className="coach-avatar">{c.e}</div>
+              <div key={c.id || c.n} className="coach-card" onClick={() => c.mapUrl ? window.open(c.mapUrl, '_blank', 'noopener,noreferrer') : showToast(`Contacting ${c.n}…`)} role="button" tabIndex={0}>
                 <div>
                   <div className="coach-name">{c.n}</div>
                   <div className="coach-skill">{c.s}</div>

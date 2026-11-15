@@ -8,7 +8,7 @@ import Landing from './pages/Landing.jsx';
 import Dashboard from './pages/Dashboard.jsx';
 import Exam from './pages/Exam.jsx';
 import Result from './pages/Result.jsx';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
@@ -19,11 +19,23 @@ function ProtectedRoute({ children }) {
 
 export default function App() {
   const [authModal, setAuthModal] = useState(null);
+  const [theme, setTheme] = useState(() => (
+    localStorage.getItem('pathmind-theme') === 'dark' ? 'dark' : 'light'
+  ));
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    localStorage.setItem('pathmind-theme', theme);
+  }, [theme]);
 
   return (
     <>
       <MeshBackground />
-      <Nav onOpenAuth={setAuthModal} />
+      <Nav
+        onOpenAuth={setAuthModal}
+        theme={theme}
+        onToggleTheme={() => setTheme((currentTheme) => (currentTheme === 'light' ? 'dark' : 'light'))}
+      />
       <div id="app">
         <Routes>
           <Route path="/" element={<Landing onOpenAuth={setAuthModal} />} />

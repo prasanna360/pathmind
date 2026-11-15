@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.jsx';
-import { CODING_TRACKS, INTERESTS, INSTRUMENTS } from '../data/constants.js';
+import { CODING_TRACKS, getInterestLabel, INTERESTS, INSTRUMENTS } from '../data/constants.js';
 
 export default function AuthModal({ tab: initialTab, onClose }) {
   const { login, signup, showToast } = useAuth();
@@ -33,7 +33,7 @@ export default function AuthModal({ tab: initialTab, onClose }) {
     setSelectedInterests((prev) => {
       if (prev.includes(val)) return prev.filter((x) => x !== val);
       if (prev.length >= 3) {
-        showToast('⚠️ You can select up to 3 interests only.');
+        showToast('You can select up to 3 interests only.');
         return prev;
       }
       return [...prev, val];
@@ -55,7 +55,7 @@ export default function AuthModal({ tab: initialTab, onClose }) {
       await login(form.loginEmail.trim(), form.loginPassword);
       onClose();
       navigate('/dashboard');
-      showToast('✅ Welcome back!');
+      showToast('Welcome back.');
     } catch (err) {
       setError(err.message);
     }
@@ -65,7 +65,7 @@ export default function AuthModal({ tab: initialTab, onClose }) {
     setError('');
     const { name, email, age, password } = form;
     if (!name.trim()) return setError('Please enter your name.');
-    if (!email.includes('@')) return setError('Please enter a valid email address.');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) return setError('Please enter a valid email address.');
     const ageNum = parseInt(age, 10);
     if (!ageNum || ageNum < 18 || ageNum > 35) return setError('Age must be between 18 and 35.');
     if (password.length < 6) return setError('Password must be at least 6 characters.');
@@ -84,12 +84,14 @@ export default function AuthModal({ tab: initialTab, onClose }) {
         interests: selectedInterests,
         codingTracks: form.codingTracks,
         freeTime: parseInt(form.freeTime, 10),
+        goal: form.goal.trim(),
+        skillLevel: form.skillLevel,
         instrument: selectedInterests.includes('🎸 Music') ? form.instrument : null,
         codingTrack: selectedInterests.includes('💻 Coding') ? form.codingTrack : null,
       });
       onClose();
       navigate('/dashboard');
-      showToast('🚀 Account created! Welcome aboard.');
+      showToast('Account created.');
     } catch (err) {
       if (err.code === 'already_registered') setAlreadyReg(true);
       else setError(err.message);
@@ -100,9 +102,9 @@ export default function AuthModal({ tab: initialTab, onClose }) {
     <div className="modal-overlay open" onClick={(e) => e.target === e.currentTarget && onClose()}>
       <div className="modal">
         <button type="button" className="modal-close" onClick={onClose}>✕</button>
-        <div className="modal-logo">Personalized AI Learning Path ✦</div>
+        <div className="modal-logo">Personalized AI Learning Path</div>
         <h2 className="modal-title">{tab === 'login' ? 'Welcome back' : 'Join Personalized AI Learning Path'}</h2>
-        <p className="modal-sub">{tab === 'login' ? 'Sign in to continue your journey' : 'Free account · Takes 60 seconds'}</p>
+        <p className="modal-sub">{tab === 'login' ? 'Sign in to continue your journey' : 'Create an account with a valid email address.'}</p>
 
         <div className="tab-row">
           <button type="button" className={`tab-btn${tab === 'login' ? ' active' : ''}`} onClick={() => { setTab('login'); setError(''); setAlreadyReg(false); }}>Log In</button>
@@ -122,7 +124,6 @@ export default function AuthModal({ tab: initialTab, onClose }) {
 
         {tab === 'signup' && alreadyReg && (
           <div className="already-reg-wall">
-            <div className="big-icon">🎓</div>
             <h3>You&apos;re Already Registered!</h3>
             <p>An account with this email already exists. Please log in to access your dashboard.</p>
             <button type="button" className="btn btn-primary" style={{ width: '100%' }} onClick={() => { setAlreadyReg(false); setTab('login'); }}>Go to Login →</button>
@@ -148,7 +149,7 @@ export default function AuthModal({ tab: initialTab, onClose }) {
               <div className="interest-grid">
                 {INTERESTS.map((item) => (
                   <div key={item} className={`interest-chip${selectedInterests.includes(item) ? ' selected' : ''}`} onClick={() => toggleInterest(item)} role="button" tabIndex={0}>
-                    {item}
+                    {getInterestLabel(item)}
                   </div>
                 ))}
               </div>
@@ -192,7 +193,7 @@ export default function AuthModal({ tab: initialTab, onClose }) {
             </div>
             <div style={{ display: 'flex', gap: '.75rem' }}>
               <button type="button" className="btn btn-outline" style={{ flex: 1 }} onClick={() => setStep(1)}>← Back</button>
-              <button type="button" className="btn btn-primary" style={{ flex: 2 }} onClick={handleSignup}>Create Account 🚀</button>
+              <button type="button" className="btn btn-primary" style={{ flex: 2 }} onClick={handleSignup}>Create Account</button>
             </div>
           </div>
         )}

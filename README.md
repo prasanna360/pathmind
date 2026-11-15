@@ -80,7 +80,7 @@ Open **http://localhost:5173** in your browser.
 
 ## Environment setup
 
-Copy `.env.example` to `.env` and replace every placeholder before starting the server. Never commit `.env`, Supabase service-role keys, JWT secrets, or user data. If a real secret has ever been shared or committed, rotate it in the provider dashboard before publishing.
+Copy `.env.example` to `.env` and replace every placeholder before starting the server. Registration accepts syntactically valid email addresses; sign-in is available only for accounts already registered with the matching password. Never commit `.env`, Supabase service-role keys, JWT secrets, or user data. If a real secret has ever been shared or committed, rotate it in the provider dashboard before publishing.
 
 ## Production build
 

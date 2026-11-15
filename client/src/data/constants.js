@@ -6,6 +6,18 @@ export const INTERESTS = [
   '🍳 Cooking',
 ];
 
+const INTEREST_LABELS = {
+  '🎸 Music': 'Music',
+  '💻 Coding': 'Coding',
+  '💃 Dance': 'Dance',
+  '📷 Photography': 'Photography',
+  '🍳 Cooking': 'Cooking',
+};
+
+export function getInterestLabel(interest) {
+  return INTEREST_LABELS[interest] || interest;
+}
+
 export function normalizeInterest(value) {
   if (INTERESTS.includes(value)) return value;
   const label = value?.split(' ').slice(1).join(' ');
@@ -13,9 +25,9 @@ export function normalizeInterest(value) {
 }
 
 export const INSTRUMENTS = [
-  { value: '🎸', label: '🎸 Guitar' },
-  { value: '🎹', label: '🎹 Piano' },
-  { value: '🎻', label: '🎻 Violin' },
+  { value: '🎸', label: 'Guitar' },
+  { value: '🎹', label: 'Piano' },
+  { value: '🎻', label: 'Violin' },
 ];
 
 export const instrumentNames = {
@@ -25,20 +37,20 @@ export const instrumentNames = {
 };
 
 export const CODING_TRACKS = [
-  { value: 'Web Development', label: '🌐 Web Development' },
-  { value: 'Python', label: '🐍 Python' },
-  { value: 'Java', label: '☕ Java' },
-  { value: 'JavaScript', label: '⚡ JavaScript' },
-  { value: 'C++', label: '🔧 C++' },
-  { value: 'Data Structures', label: '🧩 Data Structures & Algorithms' },
+  { value: 'Web Development', label: 'Web Development' },
+  { value: 'Python', label: 'Python' },
+  { value: 'Java', label: 'Java' },
+  { value: 'JavaScript', label: 'JavaScript' },
+  { value: 'C++', label: 'C++' },
+  { value: 'Data Structures', label: 'Data Structures & Algorithms' },
 ];
 
 export const pathData = {
-  '🎸 Music': { desc: 'Guitar, theory, songwriting & more', emoji: '🎸' },
-  '💻 Coding': { desc: 'Web dev, Python, algorithms & projects', emoji: '💻' },
-  '💃 Dance': { desc: 'Contemporary, hip-hop, salsa & more', emoji: '💃' },
-  '📷 Photography': { desc: 'Composition, editing, portraits & street', emoji: '📷' },
-  '🍳 Cooking': { desc: 'Cuisines, techniques & nutrition', emoji: '🍳' },
+  '🎸 Music': { desc: 'Guitar, theory, songwriting & more' },
+  '💻 Coding': { desc: 'Web dev, Python, algorithms & projects' },
+  '💃 Dance': { desc: 'Contemporary, hip-hop, salsa & more' },
+  '📷 Photography': { desc: 'Composition, editing, portraits & street' },
+  '🍳 Cooking': { desc: 'Cuisines, techniques & nutrition' },
 };
 
 export const INSTRUMENT_CURRICULA = {
@@ -65,11 +77,11 @@ export const topicMap = {
 };
 
 export const coaches = [
-  { e: '🎸', n: 'Arjun Sharma', s: 'Music & Guitar', i: 'IIT Road · ⭐ 4.9', b: 'Open Today', lat: 13.0827, lng: 80.2707 },
-  { e: '💻', n: 'Priya Nair', s: 'Coding & Web Dev', i: 'Anna Nagar · ⭐ 4.8', b: '10 seats left', lat: 13.0878, lng: 80.2087 },
-  { e: '💃', n: 'Divya Rajan', s: 'Dance & Choreography', i: 'T. Nagar · ⭐ 5.0', b: 'Top Rated', lat: 13.0418, lng: 80.2341 },
-  { e: '📷', n: 'Sneha Kumar', s: 'Photography', i: 'Mylapore · ⭐ 4.9', b: 'Free Trial', lat: 13.0339, lng: 80.2676 },
-  { e: '🍳', n: 'Chef Bala', s: 'Cooking Masterclass', i: 'Velachery · ⭐ 4.6', b: 'Open Today', lat: 12.9756, lng: 80.2209 },
+  { n: 'Arjun Sharma', s: 'Music & Guitar', i: 'IIT Road · Rating 4.9', b: 'Open Today', lat: 13.0827, lng: 80.2707 },
+  { n: 'Priya Nair', s: 'Coding & Web Dev', i: 'Anna Nagar · Rating 4.8', b: '10 seats left', lat: 13.0878, lng: 80.2087 },
+  { n: 'Divya Rajan', s: 'Dance & Choreography', i: 'T. Nagar · Rating 5.0', b: 'Top Rated', lat: 13.0418, lng: 80.2341 },
+  { n: 'Sneha Kumar', s: 'Photography', i: 'Mylapore · Rating 4.9', b: 'Free Trial', lat: 13.0339, lng: 80.2676 },
+  { n: 'Chef Bala', s: 'Cooking Masterclass', i: 'Velachery · Rating 4.6', b: 'Open Today', lat: 12.9756, lng: 80.2209 },
 ];
 
 export const examTopicLabels = {
@@ -87,8 +99,6 @@ export const projectTasks = {
   '📷 Photography': 'Create a three-photo mini-series using this week\'s photography technique.',
   '🍳 Cooking': 'Prepare a simple dish that demonstrates this week\'s cooking technique.',
 };
-
-export const RES_TYPE_ICON = { video: '🎬', pdf: '📄', article: '📰' };
 
 export function getProgressKey(key, week, codingTrack) {
   return key === '💻 Coding' && codingTrack ? `${key}|${codingTrack}|${Number(week)}` : `${key}|${Number(week)}`;
@@ -113,17 +123,17 @@ export function getPathProgress(_email, key, examHistory = [], completedLessons 
 }
 
 export function getPathDisplay(key, instrument, codingTrack) {
-  let p = pathData[key] || { desc: 'Your personalized path', emoji: '📚' };
-  let displayKey = key;
+  let p = pathData[key] || { desc: 'Your personalized path' };
+  let displayKey = getInterestLabel(key);
   if (key === '🎸 Music') {
     const safeInstrument = instrumentNames[instrument] ? instrument : '🎸';
     const iName = instrumentNames[safeInstrument];
-    p = { desc: `Your personalized ${iName} learning journey`, emoji: safeInstrument };
-    displayKey = `${safeInstrument} ${iName}`;
+    p = { desc: `Your personalized ${iName} learning journey` };
+    displayKey = iName;
   }
   if (key === '💻 Coding' && codingTrack && CODING_CURRICULA[codingTrack]) {
-    p = { desc: `Your personalized ${codingTrack} learning journey`, emoji: '💻' };
-    displayKey = `💻 ${codingTrack}`;
+    p = { desc: `Your personalized ${codingTrack} learning journey` };
+    displayKey = codingTrack;
   }
   return { ...p, displayKey };
 }
