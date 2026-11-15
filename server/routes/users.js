@@ -1,27 +1,27 @@
 import { Router } from 'express';
-import { getUsers, saveUsers, sanitizeUser } from '../db.js';
+import asyncHandler from '../asyncHandler.js';
+import { getUser, saveUser, sanitizeUser } from '../db.js';
 import { authRequired } from '../middleware/auth.js';
 
 const router = Router();
 
-router.post('/lesson-complete', authRequired, (req, res) => {
+router.post('/lesson-complete', authRequired, asyncHandler(async (req, res) => {
   const { key, week, codingTrack } = req.body;
   if (!key || !Number.isInteger(Number(week)) || Number(week) < 1 || Number(week) > 12) {
     return res.status(400).json({ error: 'A valid learning path and week are required.' });
   }
 
-  const users = getUsers();
-  const user = users[req.userEmail];
+  const user = await getUser(req.userEmail);
   if (!user) return res.status(404).json({ error: 'User not found' });
 
   if (!user.completedLessons) user.completedLessons = {};
   const storageKey = key === '💻 Coding' && codingTrack ? `${key}|${codingTrack}|${Number(week)}` : `${key}|${Number(week)}`;
   user.completedLessons[storageKey] = true;
-  saveUsers(users);
+  await saveUser(user);
   res.json({ user: sanitizeUser(user) });
-});
+}));
 
-router.post('/project-complete', authRequired, (req, res) => {
+router.post('/project-complete', authRequired, asyncHandler(async (req, res) => {
   const { key, week, codingTrack, title, description, url } = req.body;
   if (!key || !Number.isInteger(Number(week)) || Number(week) < 1 || Number(week) > 12) {
     return res.status(400).json({ error: 'A valid learning path and week are required.' });
@@ -33,8 +33,7 @@ router.post('/project-complete', authRequired, (req, res) => {
     return res.status(400).json({ error: 'Project links must start with http:// or https://.' });
   }
 
-  const users = getUsers();
-  const user = users[req.userEmail];
+  const user = await getUser(req.userEmail);
   if (!user) return res.status(404).json({ error: 'User not found' });
 
   if (!user.completedProjects) user.completedProjects = {};
@@ -45,30 +44,28 @@ router.post('/project-complete', authRequired, (req, res) => {
     url: url?.trim() || null,
     completedAt: new Date().toISOString(),
   };
-  saveUsers(users);
+  await saveUser(user);
   res.json({ user: sanitizeUser(user) });
-});
+}));
 
-router.put('/interests', authRequired, (req, res) => {
+router.put('/interests', authRequired, asyncHandler(async (req, res) => {
   const { interests, instrument, codingTrack, codingTracks } = req.body;
   if (!interests?.length) return res.status(400).json({ error: 'Please select at least one interest.' });
 
-  const users = getUsers();
-  const user = users[req.userEmail];
+  const user = await getUser(req.userEmail);
   if (!user) return res.status(404).json({ error: 'User not found' });
 
   user.interests = interests;
   user.instrument = interests.includes('🎸 Music') ? instrument : null;
   user.codingTracks = interests.includes('💻 Coding') ? (Array.isArray(codingTracks) && codingTracks.length ? codingTracks : [codingTrack || 'Web Development']) : [];
   user.codingTrack = interests.includes('💻 Coding') ? user.codingTracks[0] : null;
-  saveUsers(users);
+  await saveUser(user);
   res.json({ user: sanitizeUser(user) });
-});
+}));
 
-router.post('/exam-result', authRequired, (req, res) => {
+router.post('/exam-result', authRequired, asyncHandler(async (req, res) => {
   const { score, correct, wrong, writtenSubmitted, timeTaken, topic, codingTrack } = req.body;
-  const users = getUsers();
-  const user = users[req.userEmail];
+  const user = await getUser(req.userEmail);
   if (!user) return res.status(404).json({ error: 'User not found' });
 
   if (!user.examHistory) user.examHistory = [];
@@ -87,8 +84,8 @@ router.post('/exam-result', authRequired, (req, res) => {
   user.streak = (user.streak || 1) + (score >= 40 ? 1 : 0);
   user.hours = (user.hours || 0) + 1;
 
-  saveUsers(users);
+  await saveUser(user);
   res.json({ user: sanitizeUser(user) });
-});
+}));
 
 export default router;

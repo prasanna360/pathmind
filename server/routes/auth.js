@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import bcrypt from 'bcryptjs';
-import { getUsers, saveUsers, sanitizeUser } from '../db.js';
+import { createUser, getUser, sanitizeUser } from '../db.js';
 import { signToken, authRequired } from '../middleware/auth.js';
 
 const router = Router();
@@ -19,8 +19,6 @@ router.post('/signup', async (req, res) => {
     if (!interests?.length) return res.status(400).json({ error: 'Please select at least one interest.' });
 
     const key = email.trim().toLowerCase();
-    const users = getUsers();
-    if (users[key]) return res.status(409).json({ error: 'already_registered' });
 
     const user = {
       name: name.trim(),
@@ -41,13 +39,13 @@ router.post('/signup', async (req, res) => {
       createdAt: new Date().toISOString(),
     };
 
-    users[key] = user;
-    saveUsers(users);
+    await createUser(user);
 
     const safe = sanitizeUser(user);
     const token = signToken(user);
     res.status(201).json({ user: safe, token });
   } catch (err) {
+    if (err.code === '23505') return res.status(409).json({ error: 'already_registered' });
     console.error(err);
     res.status(500).json({ error: 'Signup failed' });
   }
@@ -59,10 +57,8 @@ router.post('/login', async (req, res) => {
     if (typeof email !== 'string' || !EMAIL_PATTERN.test(email.trim()) || !password) {
       return res.status(400).json({ error: 'Please enter a valid email address and password.' });
     }
-
     const key = email.trim().toLowerCase();
-    const users = getUsers();
-    const user = users[key];
+    const user = await getUser(key);
     if (!user) return res.status(401).json({ error: 'No account found with this email.' });
 
     const ok = await bcrypt.compare(password, user.password);
