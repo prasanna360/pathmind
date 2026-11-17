@@ -1,118 +1,157 @@
-# Personalized AI Learning Path
+# PathMind – Personalized AI Learning Path Generator
 
-Your single-file HTML app is now a **React frontend** + **Node.js (Express) backend**.
+### A Personalized Learning Platform for Students and Self-Learners
 
-## Project structure
+**Live Website:** https://pathmind-e28b.vercel.app/
 
-```
-pathmind-app/
-├── client/          React app (Vite)
-├── server/          Node.js API (Express)
-├── legacy/          Your original index.html (backup)
-└── package.json     Run both together
-```
+---
 
-## What changed
+##  About the Project
 
-| Before (HTML only) | After (React + Node.js) |
+PathMind is a web-based personalized learning platform designed to help students and individuals discover structured learning paths based on their interests, skills, and career goals.
+
+The main aim of this project is to simplify the learning process by providing clear guidance and helping learners understand what to learn, how to learn, and how to develop their skills effectively.
+
+PathMind focuses on making education more accessible, organized, and personalized for learners with different educational backgrounds.
+
+##  Problem Statement
+
+In today's digital world, students have access to numerous online courses, tutorials, and educational resources. However, many learners struggle to identify the right learning materials and follow a structured learning plan.
+
+The lack of personalized guidance often leads to confusion, inefficient learning, and difficulty achieving career goals.
+
+PathMind aims to address these challenges by helping learners identify suitable learning directions and organize their educational journey.
+
+##  Objectives
+
+- To develop a user-friendly personalized learning platform.
+- To help students identify suitable learning paths based on their interests.
+- To provide structured guidance for skill development.
+- To simplify the process of selecting learning resources.
+- To support independent and self-paced learning.
+- To encourage continuous learning and career development.
+
+##  Key Features
+
+The platform is designed around the following capabilities:
+
+### 1. Personalized Learning Guidance
+Helps learners explore learning paths according to their interests and educational goals.
+
+### 2. Structured Learning Roadmaps
+Focuses on organizing learning topics into clear and manageable stages.
+
+### 3. Skill Development
+Encourages users to identify and develop skills relevant to their chosen fields.
+
+### 4. User-Friendly Interface
+Provides a web-based interface intended to make navigation and learning guidance simple.
+
+### 5. Career-Oriented Learning
+Connects learning objectives with professional skill development and career preparation.
+
+##  Technology Stack
+
+PathMind is developed using modern web development technologies.
+
+| Technology | Purpose |
 |---|---|
-| Data in `localStorage` | Saved on the server (`server/data/users.json`) |
-| All logic in one file | Split into React components + API routes |
-| Open HTML in browser | Run dev servers and use `http://localhost:5173` |
+| HTML5 | Structures web pages and content |
+| CSS3 | Provides styling, layouts, and responsive design |
+| JavaScript | Handles interactive features and application functionality |
+| Vercel | Hosts and deploys the web application |
+| GitHub | Source code management and version control |
 
-## Step 1 — Install Node.js
+##  Proposed System Workflow
 
-Install the current Node.js LTS release from:
+The intended learning process consists of the following steps:
 
-https://nodejs.org/
+**Step 1: Access the Platform**
 
-After installing, **close and reopen** your terminal, then verify:
+The learner opens the PathMind website.
 
-```powershell
-node --version
-npm --version
-```
+**Step 2: Identify Learning Interests**
 
-## Step 2 — Install dependencies
+The learner selects or identifies their preferred learning area and educational goals.
 
-Open a terminal in this folder (`pathmind-app`) and run:
+**Step 3: Learning Path Guidance**
 
-```powershell
-cd "C:\Users\LAKSHMI\OneDrive\Desktop\New folder\pathmind-app"
-npm install
-npm run install:all
-```
+The platform provides learning guidance based on the available information and supported functionality.
 
-## Step 3 — Run the app
+**Step 4: Follow the Learning Roadmap**
 
-```powershell
-npm run dev
-```
+The learner follows the suggested sequence of topics to develop knowledge and skills.
 
-This starts:
+**Step 5: Skill Development**
 
-- **Backend API** → http://localhost:5000
-- **React frontend** → http://localhost:5173
+The learner works toward improving their understanding and achieving learning objectives.
 
-Open **http://localhost:5173** in your browser.
+##  System Architecture
 
-## API endpoints
+The basic web application architecture consists of:
 
-| Method | Route | Description |
-|---|---|---|
-| POST | `/api/auth/signup` | Create account |
-| POST | `/api/auth/login` | Log in |
-| GET | `/api/auth/me` | Current user |
-| PUT | `/api/users/interests` | Update interests |
-| POST | `/api/users/lesson-complete` | Save lesson completion |
-| POST | `/api/users/project-complete` | Save a portfolio project |
-| POST | `/api/users/exam-result` | Save exam score |
-| GET | `/api/exams/questions/:topic` | Get exam questions |
-| GET | `/api/resources/:key/:week` | Get lesson resources |
-| POST | `/api/resources` | Add a resource |
+**User → Web Interface → JavaScript Application Logic → Learning Path Interface**
 
-## Learner features
+- **Frontend:** HTML, CSS, and JavaScript
+- **Application Logic:** JavaScript-based functionality
+- **Deployment:** Vercel
+- **Version Control:** GitHub
 
-- Select multiple coding languages from **Edit Interests**. Each language has independent lessons, projects, exams, and progress.
-- Use **Today's Focus** to open the next lesson for the primary selected path.
-- Submit a project title, description, and optional work link from the final curriculum week.
-- Project and lesson progress is stored in `server/data/users.json` during local development.
+##  Live Demo
 
-## Environment setup
+PathMind is deployed using Vercel and can be accessed through the following link:
 
-Copy `.env.example` to `.env` and replace every placeholder before starting the server. Registration accepts syntactically valid email addresses; sign-in is available only for accounts already registered with the matching password. Never commit `.env`, Supabase service-role keys, JWT secrets, or user data. If a real secret has ever been shared or committed, rotate it in the provider dashboard before publishing.
+**Website:** https://pathmind-e28b.vercel.app/
 
-## Deploy the full app with Vercel
+##  Applications
 
-The frontend and Express API are deployed as two Vercel projects from this repository. Supabase stores accounts and learning resources because Vercel functions do not have persistent local storage.
+PathMind can be useful in the following areas:
 
-1. In Supabase, run [`server/data/supabase-schema.sql`](./server/data/supabase-schema.sql) in the SQL Editor.
-2. Import the GitHub repository into Vercel twice:
-   - Frontend project: set **Root Directory** to `client`; use the Vite defaults (`npm run build`, output directory `dist`).
-   - API project: set **Root Directory** to `server`; Vercel detects the exported Express app in `index.js`.
-3. Deploy the API project first. In its Vercel project settings, add:
-   - `SUPABASE_URL`
-   - `SUPABASE_ANON_KEY`
-   - `SUPABASE_SERVICE_ROLE_KEY`
-   - `JWT_SECRET` (use a long, random value)
-   - `CLIENT_ORIGINS` (the exact deployed frontend origin, such as `https://your-app.vercel.app`, without a trailing slash)
-4. In the frontend Vercel project, set `VITE_API_BASE_URL` to the API deployment URL plus `/api`, for example `https://your-api.vercel.app/api`, then redeploy the frontend.
-5. In Supabase, keep the service-role key private and never add it to the frontend project.
+1. **Educational Guidance:** Helping students explore learning directions.
+2. **Skill Development:** Supporting learners in improving technical and professional skills.
+3. **Self-Paced Learning:** Encouraging independent learning.
+4. **Career Preparation:** Helping individuals plan their learning around career objectives.
+5. **Online Education:** Supporting structured digital learning experiences.
 
-Local accounts in `server/data/users.json` are not copied to Supabase; create a new account after deploying. Locally, the app continues to use its JSON-file store unless `USE_SUPABASE_USER_STORAGE=true` is set.
+##  Future Enhancements
 
-## Production build
+The following features can be considered for future development:
 
-```powershell
-npm run build
-npm start
-```
+- Integration of AI-powered learning recommendations.
+- Personalized user dashboards.
+- Learning progress tracking.
+- Skill assessment quizzes.
+- Integration with online educational platforms.
+- AI chatbot for learning assistance.
+- Course recommendations based on skill gaps.
+- User authentication and profile management.
+- Certificates and achievement tracking.
 
-Serves the built React app from the Node.js server on port 5000.
+##  Learning Outcomes
 
-## Your original file
+Developing PathMind provides practical experience in:
 
-Your original app is preserved at:
+- Frontend web development using HTML, CSS, and JavaScript.
+- Designing user-friendly web interfaces.
+- Implementing interactive web application functionality.
+- Understanding personalized learning concepts.
+- Deploying web applications using Vercel.
+- Managing project source code through GitHub.
 
-- `legacy/index.html` — full original file
-- `legacy-app.js` — extracted JavaScript (reference)
+##  Project Scope
+
+PathMind focuses on improving the learning experience by providing an organized approach to educational and skill development guidance.
+
+The platform can be expanded with artificial intelligence, learning analytics, and personalized recommendation techniques to create a more advanced educational system.
+
+##  Conclusion
+
+PathMind is a personalized learning platform that aims to make education more structured, accessible, and goal-oriented.
+
+By focusing on individual learning interests and skill development, the project seeks to help learners navigate their educational journey more effectively.
+
+Future enhancements can further improve the platform through AI-driven recommendations, progress monitoring, and interactive learning support.
+
+---
+
+**Developed as a web development project focused on personalized education and skill development.**
